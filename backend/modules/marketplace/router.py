@@ -65,8 +65,16 @@ async def create_listing(listing: MaterialListingCreate, temp_image_id: Optional
         if temp_image_id:
             temp_path = os.path.join("uploads", f"temp_{temp_image_id}.jpg")
             if os.path.exists(temp_path):
-                final_path = os.path.join("uploads", f"{new_listing['id']}.jpg")
-                shutil.move(temp_path, final_path)
+                try:
+                    with open(temp_path, "rb") as f:
+                        db.storage.from_("listings").upload(
+                            path=f"{new_listing['id']}.jpg",
+                            file=f.read(),
+                            file_options={"content-type": "image/jpeg"}
+                        )
+                    os.remove(temp_path)
+                except Exception as upload_err:
+                    print(f"Failed to upload image to Supabase: {upload_err}")
                 
         # --- NOTIFICATION LOGIC ---
         notified_count = 0
