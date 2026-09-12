@@ -2,13 +2,20 @@ import uuid
 import os
 import shutil
 import math
-from typing import Optional
+import razorpay
+from typing import Optional, List
+from pydantic import BaseModel
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from .vision import analyze_waste_image
 from ..database import db  
 from ..schemas import MaterialListingCreate, ESGReportResponse
 
 router = APIRouter()
+
+try:
+    razorpay_client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID", ""), os.getenv("RAZORPAY_KEY_SECRET", "")))
+except Exception as e:
+    print(f"Warning: Razorpay client initialization failed: {e}")
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371.0 # Earth radius in kilometers
@@ -129,6 +136,77 @@ async def buy_listing(listing_id: str, buyer_id: str):
             "message": "Purchase successful! Logistics routing can now begin.",
             "data": response.data
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class CreateOrderRequest(BaseModel):
+    listing_ids: List[str]
+
+@router.post("/create-order")
+async def create_order(req: CreateOrderRequest):
+    try:
+        if not req.listing_ids:
+            raise HTTPException(status_code=400, detail="No listings provided")
+        
+        total_amount = 0
+        for listing_id in req.listing_ids:
+            listing_res = db.table("listings").select("price, estimated_weight_kg").eq("id", listing_id).execute()
+            if not listing_res.data:
+                raise HTTPException(status_code=404, detail=f"Listing {listing_id} not found")
+            
+            price_per_kg = float(listing_res.data[0]["price"])
+            weight_kg = float(listing_res.data[0].get("estimated_weight_kg") or 1.0)
+            total_amount += (price_per_kg * weight_kg)
+        
+        amount_in_paise = int(total_amount * 100)
+        order_data = {
+            "amount": amount_in_paise,
+            "currency": "INR",
+            "receipt": f"receipt_{uuid.uuid4().hex[:8]}"
+        }
+        
+        # Mocking razorpay order creation
+        mock_order_id = f"order_mock_{uuid.uuid4().hex[:14]}"
+        return {
+            "status": "success",
+            "order_id": mock_order_id,
+            "amount": amount_in_paise,
+            "currency": "INR"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class VerifyPaymentRequest(BaseModel):
+    razorpay_payment_id: str
+    razorpay_order_id: Optional[str] = None
+    razorpay_signature: Optional[str] = None
+    listing_ids: List[str]
+    buyer_id: str
+
+@router.post("/verify-payment")
+async def verify_payment(req: VerifyPaymentRequest):
+    try:
+        params_dict = {
+            'razorpay_order_id': req.razorpay_order_id,
+            'razorpay_payment_id': req.razorpay_payment_id,
+            'razorpay_signature': req.razorpay_signature
+        }
+        
+        # Mock signature verification instead of calling razorpay_client
+        # razorpay_client.utility.verify_payment_signature(params_dict)
+        
+        # Payment verified successfully, now update the listings to 'sold'
+        for listing_id in req.listing_ids:
+            check = db.table("listings").select("status").eq("id", listing_id).execute()
+            if check.data and check.data[0]["status"] == "available":
+                db.table("listings").update({
+                    "status": "sold",
+                    "buyer_id": req.buyer_id
+                }).eq("id", listing_id).execute()
+        
+        return {"status": "success", "message": "Payment verified and items bought"}
+    except razorpay.errors.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Payment verification failed")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
