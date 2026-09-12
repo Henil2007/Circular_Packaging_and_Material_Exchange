@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { apiClient } from '../api/client';
 
 interface AuthProps {
   onSuccess: () => void;
@@ -96,6 +97,10 @@ export default function Auth({ onSuccess }: AuthProps) {
   const [phoneError, setPhoneError]           = useState('');
   const [password, setPassword]               = useState('');
   const [passwordError, setPasswordError]     = useState('');
+  const [companyName, setCompanyName]         = useState('');
+  const [email, setEmail]                     = useState('');
+  const [globalError, setGlobalError]         = useState('');
+  const [isLoading, setIsLoading]             = useState(false);
   const [dropdownOpen, setDropdownOpen]       = useState(false);
   const [countrySearch, setCountrySearch]     = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -161,9 +166,10 @@ export default function Auth({ onSuccess }: AuthProps) {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate phone and password on signup
+    setGlobalError('');
+
     if (!isLogin) {
       if (phoneNumber.length !== selectedCountry.digits) {
         setPhoneError(`${selectedCountry.name} requires exactly ${selectedCountry.digits} digits`);
@@ -175,7 +181,38 @@ export default function Auth({ onSuccess }: AuthProps) {
         return;
       }
     }
-    onSuccess();
+
+    setIsLoading(true);
+    try {
+      if (isLogin) {
+        const res = await apiClient.post<{ status: string, user_data: any }>('/auth/login', {
+          email,
+          password
+        });
+        localStorage.setItem('user', JSON.stringify(res.user_data));
+        onSuccess();
+      } else {
+        await apiClient.post('/auth/register', {
+          company_name: companyName,
+          email,
+          phone: `${selectedCountry.dial}${phoneNumber}`,
+          password,
+          role: 'supplier'
+        });
+        localStorage.setItem('user', JSON.stringify({ email, role: 'supplier' }));
+        onSuccess();
+      }
+    } catch (error: any) {
+      const msg = error.message || "An error occurred";
+      if (msg === "User not found") {
+        setIsLogin(false);
+        setGlobalError("Account not found. Please sign up.");
+      } else {
+        setGlobalError(msg);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -200,6 +237,12 @@ export default function Auth({ onSuccess }: AuthProps) {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
+            {globalError && (
+              <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', fontWeight: 500 }}>
+                {globalError}
+              </div>
+            )}
+
             {!isLogin && (
               <>
                 <div className="form-group">
@@ -208,26 +251,32 @@ export default function Auth({ onSuccess }: AuthProps) {
                     id="company-name"
                     type="text"
                     required
+                    value={companyName}
+                    onChange={e => setCompanyName(e.target.value)}
                     className="form-input"
                     placeholder="Acme Corp"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="email">Business Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    className="form-input"
-                    placeholder="contact@acme.com"
                   />
                 </div>
               </>
             )}
 
-            {/* ── Phone Number with Country Code Picker ── */}
             <div className="form-group">
-              <label className="form-label" htmlFor="phone-number">Phone Number</label>
+              <label className="form-label" htmlFor="email">Business Email</label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="form-input"
+                placeholder="contact@acme.com"
+              />
+            </div>
+
+            {/* ── Phone Number with Country Code Picker ── */}
+            {!isLogin && (
+              <div className="form-group">
+                <label className="form-label" htmlFor="phone-number">Phone Number</label>
               <div className="phone-input-wrapper" ref={dropdownRef}>
 
                 {/* Country Code Button */}
@@ -304,14 +353,15 @@ export default function Auth({ onSuccess }: AuthProps) {
               </div>
 
               {/* Hint / error text */}
-              {phoneError ? (
-                <p id="phone-hint" className="phone-error-msg" role="alert">{phoneError}</p>
-              ) : (
-                <p id="phone-hint" className="phone-hint-msg">
-                  {selectedCountry.name} · {selectedCountry.dial} · {selectedCountry.digits}-digit number
-                </p>
-              )}
-            </div>
+                {phoneError ? (
+                  <p id="phone-hint" className="phone-error-msg" role="alert">{phoneError}</p>
+                ) : (
+                  <p id="phone-hint" className="phone-hint-msg">
+                    {selectedCountry.name} · {selectedCountry.dial} · {selectedCountry.digits}-digit number
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="form-group">
               <label className="form-label" htmlFor="password">
@@ -334,8 +384,8 @@ export default function Auth({ onSuccess }: AuthProps) {
               )}
             </div>
 
-            <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '8px' }}>
-              {isLogin ? 'Sign In' : 'Create Account'}
+            <button type="submit" className="btn-primary" disabled={isLoading} style={{ width: '100%', marginTop: '8px', opacity: isLoading ? 0.7 : 1 }}>
+              {isLoading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
             </button>
           </form>
 
@@ -345,6 +395,7 @@ export default function Auth({ onSuccess }: AuthProps) {
               type="button"
               onClick={() => { 
                 setIsLogin(!isLogin); 
+                setGlobalError('');
                 setPhoneNumber(''); 
                 setPhoneError('');
                 setPassword('');

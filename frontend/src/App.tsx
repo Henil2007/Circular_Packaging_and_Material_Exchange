@@ -3,19 +3,23 @@ import Auth from './components/Auth';
 import DashboardChoice from './components/DashboardChoice';
 import SellPage from './components/Sellpage';
 import BuyPage from './components/BuyPage';
+import CartPage from './components/CartPage';
+import { apiClient } from './api/client';
 
-type View = 'dashboard' | 'buy' | 'sell';
+type View = 'dashboard' | 'buy' | 'sell' | 'cart';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('auth') === 'true';
   });
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [isBackendLive, setIsBackendLive] = useState<boolean>(false);
+  const [cart, setCart] = useState<any[]>([]);
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      if (['dashboard', 'buy', 'sell'].includes(hash)) {
+      if (['dashboard', 'buy', 'sell', 'cart'].includes(hash)) {
         setCurrentView(hash);
       } else if (isAuthenticated) {
         // If hash is empty or invalid, replace it cleanly without adding to history stack
@@ -36,6 +40,20 @@ export default function App() {
 
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        await apiClient.get('/health');
+        setIsBackendLive(true);
+      } catch (error) {
+        setIsBackendLive(false);
+      }
+    };
+    checkBackend();
+    const interval = setInterval(checkBackend, 15000); // Check every 15s
+    return () => clearInterval(interval);
+  }, []);
 
   const login = () => {
     localStorage.setItem('auth', 'true');
@@ -74,9 +92,27 @@ export default function App() {
         </button>
 
         <div className="navbar-actions">
-          <div className="nav-badge">
-            <div className="nav-badge-dot" />
-            Live Market
+          <button 
+            onClick={() => navigateTo('cart')}
+            className="btn-ghost"
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '50%' }}
+            title="Cart"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            {cart.length > 0 && (
+              <span style={{ position: 'absolute', top: 0, right: 0, background: '#ef4444', color: 'white', fontSize: '12px', fontWeight: 700, width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {cart.length}
+              </span>
+            )}
+          </button>
+          
+          <div className="nav-badge" style={{ color: isBackendLive ? '#10b981' : '#ef4444', borderColor: isBackendLive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', backgroundColor: isBackendLive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+            <div className="nav-badge-dot" style={{ backgroundColor: isBackendLive ? '#10b981' : '#ef4444', boxShadow: isBackendLive ? '0 0 8px rgba(16, 185, 129, 0.5)' : '0 0 8px rgba(239, 68, 68, 0.5)' }} />
+            {isBackendLive ? 'API Connected' : 'API Offline'}
           </div>
           <button
             onClick={logout}
@@ -106,7 +142,17 @@ export default function App() {
                 ← Back to Dashboard
               </button>
             </div>
-            <BuyPage />
+            <BuyPage onAddToCart={(item) => setCart([...cart, item])} />
+          </div>
+        )}
+        {currentView === 'cart' && (
+          <div style={{ position: 'relative' }}>
+            <div className="page-container" style={{ paddingBottom: 0, paddingTop: '24px' }}>
+              <button onClick={() => navigateTo('dashboard')} className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+                ← Back to Dashboard
+              </button>
+            </div>
+            <CartPage cart={cart} setCart={setCart} onNavigate={navigateTo} />
           </div>
         )}
       </main>
