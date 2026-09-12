@@ -1,6 +1,20 @@
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import httpx
+
+# Disable SSL verification for local development
+_original_init = httpx.Client.__init__
+def _patched_init(self, *args, **kwargs):
+    kwargs['verify'] = False
+    _original_init(self, *args, **kwargs)
+httpx.Client.__init__ = _patched_init
+
+_original_async_init = httpx.AsyncClient.__init__
+def _patched_async_init(self, *args, **kwargs):
+    kwargs['verify'] = False
+    _original_async_init(self, *args, **kwargs)
+httpx.AsyncClient.__init__ = _patched_async_init
 
 load_dotenv()
 

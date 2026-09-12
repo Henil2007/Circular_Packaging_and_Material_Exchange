@@ -1,3 +1,8 @@
+import uuid
+import os
+import shutil
+import math
+from typing import Optional
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from .vision import analyze_waste_image
 from ..database import db  
@@ -5,11 +10,27 @@ from ..schemas import MaterialListingCreate, ESGReportResponse
 
 router = APIRouter()
 
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371.0 # Earth radius in kilometers
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (math.sin(dlat / 2) * math.sin(dlat / 2) +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+         math.sin(dlon / 2) * math.sin(dlon / 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
 @router.post("/analyze-image")
 async def ai_auto_listing(file: UploadFile = File(...)):
     # 1. Read the uploaded image file
     image_bytes = await file.read()
     
+    # Generate a temporary ID and save the image
+    temp_id = str(uuid.uuid4())
+    temp_path = os.path.join("uploads", f"temp_{temp_id}.jpg")
+    with open(temp_path, "wb") as f:
+        f.write(image_bytes)
+        
     # 2. Send it to Gemini for analysis
     result = await analyze_waste_image(image_bytes)
     
@@ -19,27 +40,73 @@ async def ai_auto_listing(file: UploadFile = File(...)):
     # 3. Return the generated listing data to the frontend
     return {
         "message": "AI successfully analyzed the material!",
-        "generated_listing": result["data"]
+        "generated_listing": result["data"],
+        "temp_image_id": temp_id
     }
 
 @router.post("/listings")
-async def create_listing(listing: MaterialListingCreate):
+async def create_listing(listing: MaterialListingCreate, temp_image_id: Optional[str] = None):
     # Convert the Pydantic model to a dictionary
     listing_data = listing.model_dump()
     
     try:
         # Insert the data into your Supabase table
         response = db.table("listings").insert(listing_data).execute()
-        return {"status": "success", "message": "Listing saved to Supabase!", "data": response.data}
+        new_listing = response.data[0]
+        
+        # Link image if provided
+        if temp_image_id:
+            temp_path = os.path.join("uploads", f"temp_{temp_image_id}.jpg")
+            if os.path.exists(temp_path):
+                final_path = os.path.join("uploads", f"{new_listing['id']}.jpg")
+                shutil.move(temp_path, final_path)
+                
+        # --- NOTIFICATION LOGIC ---
+        notified_count = 0
+        try:
+            # Query buyers from the database
+            buyers_res = db.table("users").select("*").eq("role", "buyer").execute()
+            buyers = buyers_res.data
+            
+            for buyer in buyers:
+                b_lat = buyer.get("lat")
+                b_lng = buyer.get("lng")
+                b_email = buyer.get("username") # Mocking email as username
+                
+                # For demo purposes: if a buyer doesn't have coordinates, mock them to be ~15km away
+                if b_lat is None or b_lng is None:
+                    b_lat, b_lng = listing.lat + 0.1, listing.lng + 0.1
+                
+                dist = haversine(listing.lat, listing.lng, float(b_lat), float(b_lng))
+                if dist <= 50.0:
+                    print(f"[EMAIL SENT] Notifying {b_email} about new {listing.material_category} listing {round(dist, 1)}km away!")
+                    notified_count += 1
+        except Exception as e:
+            print(f"Failed to send notifications: {e}")
+                
+        return {
+            "status": "success", 
+            "message": "Listing saved to Supabase!", 
+            "data": response.data,
+            "notified_count": notified_count
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/listings")
 async def get_listings():
     try:
-        # Fetch all listings from Supabase
-        response = db.table("listings").select("*").execute()
+        # Fetch all available listings from Supabase
+        response = db.table("listings").select("*").eq("status", "available").execute()
         return {"status": "success", "listings": response.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/listings/{listing_id}")
+async def delete_listing(listing_id: str):
+    try:
+        response = db.table("listings").delete().eq("id", listing_id).execute()
+        return {"status": "success", "message": "Listing deleted successfully!", "data": response.data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
