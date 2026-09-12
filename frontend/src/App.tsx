@@ -69,7 +69,7 @@ export default function App() {
             </svg>
           </div>
           <span className="navbar-title">
-            Circular Exchange
+            LoopX
           </span>
         </button>
 
