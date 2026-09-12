@@ -54,10 +54,11 @@ export default function SellPage() {
       setIsAnalyzing(true);
       try {
         const res = await apiClient.post<{ message: string; generated_listing: any; temp_image_id: string }>('/marketplace/analyze-image', data);
-        if (res && res.generated_listing) {
+        if (res) {
           if (res.temp_image_id) {
             setTempImageId(res.temp_image_id);
           }
+          if (res.generated_listing) {
           setFormData((prev) => {
             const cat = res.generated_listing.material_category?.toLowerCase();
             const validCategory = ['cardboard', 'plastics', 'pallets', 'other'].includes(cat) ? cat : 'other';
@@ -69,6 +70,7 @@ export default function SellPage() {
               description: res.generated_listing.condition || prev.description,
             };
           });
+        }
         }
       } catch (err) {
         console.error('Failed to analyze image:', err);
@@ -297,8 +299,8 @@ export default function SellPage() {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
-            <button type="submit" className="btn-primary">
-              Publish Listing
+            <button type="submit" className="btn-primary" disabled={isAnalyzing}>
+              {isAnalyzing ? 'Analyzing Image...' : 'Publish Listing'}
             </button>
           </div>
         </form>
