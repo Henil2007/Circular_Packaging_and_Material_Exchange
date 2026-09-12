@@ -21,23 +21,31 @@ export default function SellPage() {
   };
 
   return (
-    <div className="sell-page">
-      {/* Page header */}
-      <div className="page-header">
-        <div className="page-eyebrow">📦 New Listing</div>
-        <h1 className="page-title">List Surplus Packaging</h1>
-        <p className="page-subtitle">
-          Fill in the details below to publish your materials to the marketplace. Listings go live instantly.
+    <div className="page-container" style={{ maxWidth: '800px' }}>
+      <div className="sell-header">
+        <h1 className="sell-title">Create New Listing</h1>
+        <p className="sell-subtitle">
+          Enter the details of your surplus materials. Listings will be visible to all verified buyers on the exchange.
         </p>
       </div>
 
-      {/* Form card */}
-      <div className="form-card">
-        <form onSubmit={handleSubmit} className="form-section">
+      <div className="sell-form-card">
+        <div className="form-tip-box">
+          <div className="tip-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div className="tip-text">
+            <strong>Pro Tip:</strong> Listings with precise weight measurements and clear location details receive responses 3x faster from enterprise buyers.
+          </div>
+        </div>
 
-          {/* Item Name */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="form-group">
-            <label className="form-label" htmlFor="item-name">Item Name</label>
+            <label className="form-label" htmlFor="item-name">Listing Title</label>
             <input
               id="item-name"
               type="text"
@@ -45,12 +53,11 @@ export default function SellPage() {
               value={formData.itemName}
               onChange={(e) => setFormData({ ...formData, itemName: e.target.value })}
               className="form-input"
-              placeholder="e.g., Heavy Duty Corrugated Boxes"
+              placeholder="e.g., Heavy Duty Corrugated Boxes (Double Wall)"
             />
           </div>
 
-          {/* Category + Weight */}
-          <div className="form-row">
+          <div className="form-grid">
             <div className="form-group">
               <label className="form-label" htmlFor="category">Material Category</label>
               <select
@@ -59,10 +66,10 @@ export default function SellPage() {
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="form-input"
               >
-                <option value="cardboard">📦 Cardboard</option>
-                <option value="plastics">🧴 Plastics (HDPE/PET)</option>
-                <option value="pallets">🪵 Wooden Pallets</option>
-                <option value="other">♻️ Other</option>
+                <option value="cardboard">Cardboard</option>
+                <option value="plastics">Plastics (HDPE/PET)</option>
+                <option value="pallets">Wooden Pallets</option>
+                <option value="other">Other Materials</option>
               </select>
             </div>
             <div className="form-group">
@@ -80,10 +87,9 @@ export default function SellPage() {
             </div>
           </div>
 
-          {/* Quantity + Price */}
-          <div className="form-row">
+          <div className="form-grid">
             <div className="form-group">
-              <label className="form-label" htmlFor="quantity">Quantity (Units)</label>
+              <label className="form-label" htmlFor="quantity">Quantity (Units/Pallets)</label>
               <input
                 id="quantity"
                 type="number"
@@ -96,61 +102,60 @@ export default function SellPage() {
               />
             </div>
             <div className="form-group">
-              <label className="form-label" htmlFor="price">Price / Offer</label>
+              <label className="form-label" htmlFor="price">Asking Price</label>
               <input
                 id="price"
                 type="text"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 className="form-input"
-                placeholder="e.g., Free Pickup / ₹2/kg"
+                placeholder="e.g., Free Pickup or ₹2/kg"
               />
             </div>
           </div>
 
-          {/* Location */}
           <div className="form-group">
-            <label className="form-label" htmlFor="location">Pickup Location</label>
+            <label className="form-label" htmlFor="location">Facility Location</label>
             <input
               id="location"
               type="text"
+              required
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               className="form-input"
-              placeholder="e.g., Warehouse A, Mumbai"
+              placeholder="e.g., Warehouse A, Mumbai Industrial Area"
             />
           </div>
 
-          {/* Description */}
           <div className="form-group">
-            <label className="form-label" htmlFor="description">Additional Details (optional)</label>
+            <label className="form-label" htmlFor="description">Additional Details</label>
             <textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="form-input"
-              placeholder="Condition, special handling notes, availability dates..."
+              placeholder="Please describe condition, handling requirements, or availability dates..."
             />
           </div>
 
-          {/* Tip */}
-          <div className="form-tip">
-            💡 Listings with a location and price receive 3× more responses on average.
+          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
+            <button type="submit" className="btn-primary">
+              Publish Listing
+            </button>
           </div>
-
-          {/* Submit */}
-          <button type="submit" className="sell-btn" id="publish-listing-btn">
-            🚀 Publish Listing
-          </button>
         </form>
       </div>
 
-      {/* Success toast */}
       {showToast && (
         <div className="toast">
-          <div className="toast-icon">✅</div>
-          <div className="toast-text">
-            <strong>Listing Published!</strong>
+          <div className="toast-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div className="toast-body">
+            <strong>Listing Published</strong>
             <span>Your materials are now live on the marketplace.</span>
           </div>
         </div>

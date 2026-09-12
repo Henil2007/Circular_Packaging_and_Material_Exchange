@@ -6,78 +6,71 @@ interface ChoiceProps {
 
 export default function DashboardChoice({ onSelect }: ChoiceProps) {
   return (
-    <div className="dashboard-page">
-      {/* Hero text */}
-      <div className="dashboard-hero">
-        <div className="dashboard-eyebrow">
-          🌿 Circular Economy Platform
-        </div>
-        <h1 className="dashboard-heading">
-          Trade <span className="highlight">Recycled</span><br />
-          Packaging Materials
-        </h1>
-        <p className="dashboard-description">
-          Join the circular carbon ecosystem. Source or list surplus packaging to reduce waste and cut embodied carbon from your supply chain.
+    <div className="page-container">
+      <div className="dashboard-header">
+        <span className="dashboard-eyebrow">Platform Dashboard</span>
+        <h1 className="dashboard-title">What would you like to do?</h1>
+        <p className="dashboard-subtitle">
+          Select an action to continue. You can switch between buying and selling at any time from the navigation menu.
         </p>
       </div>
 
-      {/* Action cards */}
-      <div className="dashboard-cards">
-        {/* Buy Card */}
+      <div className="dashboard-grid">
         <button
-          id="choose-buy-btn"
           onClick={() => onSelect('buy')}
-          className="choice-card choice-card-buy"
+          className="action-card"
         >
-          <div className="choice-card-icon icon-buy">🛒</div>
-          <h2 className="choice-card-title">I want to Buy</h2>
-          <p className="choice-card-desc">
-            Source recycled cardboard, plastics, and pallets. Reduce procurement costs while lowering your environmental footprint.
-          </p>
-          <div className="choice-card-cta cta-buy">
-            Browse listings →
+          <div className="action-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
           </div>
-          <div className="choice-card-corner corner-buy" />
+          <h2 className="action-card-title">Procure Materials</h2>
+          <p className="action-card-desc">
+            Source high-quality recycled packaging materials including cardboard, plastics, and pallets from verified sellers.
+          </p>
+          <div className="action-card-cta">
+            Browse Marketplace →
+          </div>
         </button>
 
-        {/* Sell Card */}
         <button
-          id="choose-sell-btn"
           onClick={() => onSelect('sell')}
-          className="choice-card choice-card-sell"
+          className="action-card"
         >
-          <div className="choice-card-icon icon-sell">📦</div>
-          <h2 className="choice-card-title">I want to Sell</h2>
-          <p className="choice-card-desc">
-            List surplus packaging and divert industrial waste from landfills. Turn your excess materials into value for another business.
-          </p>
-          <div className="choice-card-cta cta-sell">
-            Create a listing →
+          <div className="action-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
           </div>
-          <div className="choice-card-corner corner-sell" />
+          <h2 className="action-card-title">List Surplus Inventory</h2>
+          <p className="action-card-desc">
+            Create listings for your excess packaging materials. Turn waste into revenue while contributing to the circular economy.
+          </p>
+          <div className="action-card-cta">
+            Create Listing →
+          </div>
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="dashboard-stats">
-        <div className="stat-item">
-          <div className="stat-value">2.4K+</div>
-          <div className="stat-label">Active Listings</div>
+      <div className="metrics-bar">
+        <div className="metric">
+          <div className="metric-val">2,450</div>
+          <div className="metric-label">Active Listings</div>
         </div>
-        <div className="stat-divider" />
-        <div className="stat-item">
-          <div className="stat-value">850t</div>
-          <div className="stat-label">CO₂ Saved</div>
+        <div className="metric-divider" />
+        <div className="metric">
+          <div className="metric-val">850t</div>
+          <div className="metric-label">CO₂ Offset</div>
         </div>
-        <div className="stat-divider" />
-        <div className="stat-item">
-          <div className="stat-value">340+</div>
-          <div className="stat-label">Businesses</div>
-        </div>
-        <div className="stat-divider" />
-        <div className="stat-item">
-          <div className="stat-value">98%</div>
-          <div className="stat-label">Satisfaction</div>
+        <div className="metric-divider" />
+        <div className="metric">
+          <div className="metric-val">342</div>
+          <div className="metric-label">Verified Enterprises</div>
         </div>
       </div>
     </div>
