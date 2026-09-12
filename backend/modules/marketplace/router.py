@@ -42,7 +42,11 @@ async def ai_auto_listing(file: UploadFile = File(...)):
     result = await analyze_waste_image(image_bytes)
     
     if result.get("status") == "error":
-        raise HTTPException(status_code=500, detail=result["message"])
+        return {
+            "message": f"AI analysis failed: {result['message']}",
+            "generated_listing": None,
+            "temp_image_id": temp_id
+        }
         
     # 3. Return the generated listing data to the frontend
     return {
@@ -75,6 +79,9 @@ async def create_listing(listing: MaterialListingCreate, temp_image_id: Optional
                     os.remove(temp_path)
                 except Exception as upload_err:
                     print(f"Failed to upload image to Supabase: {upload_err}")
+                    with open("upload_error.log", "w") as err_file:
+                        err_file.write(str(upload_err))
+                    raise HTTPException(status_code=500, detail=f"Image upload to Supabase failed: {upload_err}")
                 
         # --- NOTIFICATION LOGIC ---
         notified_count = 0
