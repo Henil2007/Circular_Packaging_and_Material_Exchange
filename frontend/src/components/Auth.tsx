@@ -13,52 +13,104 @@ export default function Auth({ onSuccess }: AuthProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-center text-emerald-700 mb-8">
-          Circular Exchange
-        </h2>
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          {isLogin ? 'Log in to your account' : 'Create an account'}
-        </h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Company / User Name</label>
-                <input type="text" required className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500" placeholder="Eco Corp" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Email Address</label>
-                <input type="email" required className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500" placeholder="contact@ecocorp.com" />
-              </div>
-            </>
-          )}
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-            <input type="tel" required className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500" placeholder="+1 (555) 000-0000" />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              {isLogin ? 'Password' : 'Create Strong Password'}
-            </label>
-            <input type="password" required className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500" placeholder="••••••••" />
+    <div className="auth-page">
+      {/* Background effects */}
+      <div className="bg-grid" />
+      <div className="bg-orb bg-orb-1" />
+      <div className="bg-orb bg-orb-2" />
+
+      <div className="auth-container">
+        <div className="auth-card">
+          {/* Header */}
+          <div className="auth-header">
+            <div className="auth-logo">♻️</div>
+            <div className="auth-brand">
+              Circular <span className="highlight">Exchange</span>
+            </div>
+            <p className="auth-tagline">
+              The marketplace for recycled packaging &amp; sustainable materials
+            </p>
           </div>
 
-          <button type="submit" className="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 transition duration-300">
-            {isLogin ? 'Log In' : 'Sign Up'}
-          </button>
-        </form>
+          {/* Mode title */}
+          <p className="auth-mode-title">
+            {isLogin ? '👋 Welcome back' : '🌱 Create your account'}
+          </p>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={() => setIsLogin(!isLogin)} className="text-emerald-600 font-semibold hover:underline">
-            {isLogin ? 'Sign up' : 'Log in'}
-          </button>
-        </p>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="auth-form">
+            {!isLogin && (
+              <>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="company-name">Company / User Name</label>
+                  <input
+                    id="company-name"
+                    type="text"
+                    required
+                    className="form-input"
+                    placeholder="Eco Corp Ltd."
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="email">Email Address</label>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    className="form-input"
+                    placeholder="contact@ecocorp.com"
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="phone">Phone Number</label>
+              <input
+                id="phone"
+                type="tel"
+                required
+                className="form-input"
+                placeholder="+91 98765 43210"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">
+                {isLogin ? 'Password' : 'Create Strong Password'}
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                className="form-input"
+                placeholder="••••••••••"
+              />
+            </div>
+
+            <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '4px' }}>
+              {isLogin ? '→ Sign In' : '🌿 Create Account'}
+            </button>
+          </form>
+
+          {/* Toggle */}
+          <p className="auth-toggle">
+            {isLogin ? "Don't have an account? " : 'Already have an account? '}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="auth-toggle-btn"
+            >
+              {isLogin ? 'Sign up free' : 'Sign in'}
+            </button>
+          </p>
+
+          {/* Feature pills */}
+          <div className="auth-feature-pills">
+            <div className="feature-pill">🌍 Carbon Neutral</div>
+            <div className="feature-pill">♻️ Circular Economy</div>
+            <div className="feature-pill">🔒 Verified Sellers</div>
+          </div>
+        </div>
       </div>
     </div>
   );

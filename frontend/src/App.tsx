@@ -13,20 +13,39 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <h1 className="font-bold text-xl text-emerald-700 cursor-pointer" onClick={() => setCurrentView('dashboard')}>
-          Circular Exchange
-        </h1>
-        <button 
-          onClick={() => setIsAuthenticated(false)}
-          className="text-sm text-gray-500 hover:text-gray-800"
-        >
-          Sign Out
+    <div style={{ position: 'relative', minHeight: '100svh' }}>
+      {/* Animated background */}
+      <div className="bg-grid" />
+      <div className="bg-orb bg-orb-1" />
+      <div className="bg-orb bg-orb-2" />
+      <div className="bg-orb bg-orb-3" />
+
+      {/* Navbar */}
+      <nav className="navbar">
+        <button className="navbar-brand" onClick={() => setCurrentView('dashboard')}>
+          <div className="navbar-logo-icon">♻️</div>
+          <span className="navbar-title">
+            Circular <span className="highlight">Exchange</span>
+          </span>
         </button>
+
+        <div className="navbar-actions">
+          <div className="nav-badge">
+            <div className="nav-badge-dot" />
+            Live Market
+          </div>
+          <button
+            id="signout-btn"
+            onClick={() => { setIsAuthenticated(false); setCurrentView('dashboard'); }}
+            className="btn-signout"
+          >
+            Sign Out
+          </button>
+        </div>
       </nav>
 
-      <main>
+      {/* Main content */}
+      <main className="z-rel" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {currentView === 'dashboard' && <DashboardChoice onSelect={(choice) => setCurrentView(choice)} />}
         {currentView === 'sell' && <SellPage />}
         {currentView === 'buy' && <BuyPage />}
