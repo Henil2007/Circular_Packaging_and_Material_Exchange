@@ -128,6 +128,18 @@ export default function SellPage() {
           </div>
 
           <div className="form-group">
+            <label className="form-label" htmlFor="image">Material Photo <span style={{ color: '#ef4444' }}>*</span></label>
+            <input
+              id="image"
+              type="file"
+              required
+              accept=".jpg,.jpeg,.png"
+              className="form-input file-input-styled"
+            />
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Required formats: JPG, JPEG, PNG. Upload a clear photo to increase buyer trust.</span>
+          </div>
+
+          <div className="form-group">
             <label className="form-label" htmlFor="description">Additional Details</label>
             <textarea
               id="description"

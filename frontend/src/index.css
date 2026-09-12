@@ -241,6 +241,32 @@ body {
   box-shadow: var(--shadow-focus);
 }
 
+.file-input-styled {
+  padding: 8px 12px;
+  background: var(--bg-body);
+  cursor: pointer;
+}
+
+.file-input-styled::file-selector-button {
+  margin-right: 16px;
+  padding: 8px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.file-input-styled::file-selector-button:hover {
+  background: var(--bg-surface-hover);
+  border-color: #cbd5e1;
+}
+
 select.form-input { cursor: pointer; }
 
 textarea.form-input {
