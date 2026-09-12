@@ -84,7 +84,7 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
           <div style={{ flex: '1 1 400px', minWidth: '300px' }}>
             <div style={{ width: '100%', aspectRatio: '1/1', background: 'var(--bg-body)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid var(--border-subtle)' }}>
               <img 
-                src={`/uploads/${selectedListing.id}.jpg`}
+                src={`https://jgaiqseoqgiaowtyyvas.supabase.co/storage/v1/object/public/listings/${selectedListing.id}.jpg`}
                 onError={(e) => {
                   e.currentTarget.onerror = null; // Prevent infinite loop if fallback fails
                   e.currentTarget.src = getCategoryImage(selectedListing.category);
