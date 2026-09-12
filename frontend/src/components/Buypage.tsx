@@ -30,7 +30,7 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
             weight: l.estimated_weight_kg,
             quantity: 1,
             location: 'Local Warehouse',
-            price: `₹${l.price}`,
+            price: `₹${(l.price * l.estimated_weight_kg).toLocaleString()}`,
             co2: `${(l.estimated_weight_kg * 1.5 / 1000).toFixed(1)}t`
           }));
           setListings(mapped);
@@ -109,7 +109,7 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
               <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--brand-primary)', marginBottom: '4px' }}>
                 {selectedListing.price}
               </div>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Pricing is estimated per unit/kg. Taxes and logistics calculated at checkout.</p>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Total estimated price based on weight. Taxes and logistics calculated at checkout.</p>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>

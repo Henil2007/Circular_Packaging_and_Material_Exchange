@@ -110,10 +110,7 @@ export default function App() {
             )}
           </button>
           
-          <div className="nav-badge" style={{ color: isBackendLive ? '#10b981' : '#ef4444', borderColor: isBackendLive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', backgroundColor: isBackendLive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
-            <div className="nav-badge-dot" style={{ backgroundColor: isBackendLive ? '#10b981' : '#ef4444', boxShadow: isBackendLive ? '0 0 8px rgba(16, 185, 129, 0.5)' : '0 0 8px rgba(239, 68, 68, 0.5)' }} />
-            {isBackendLive ? 'API Connected' : 'API Offline'}
-          </div>
+
           <button
             onClick={logout}
             className="btn-ghost"

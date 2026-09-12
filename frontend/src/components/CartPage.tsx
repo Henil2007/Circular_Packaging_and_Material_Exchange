@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { apiClient } from '../api/client';
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 interface CartItem {
   id: string;
   name: string;
@@ -27,17 +33,66 @@ export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
       const user = userStr ? JSON.parse(userStr) : null;
       // Database expects a valid UUID for buyer_id
       const buyerId = user?.id || '00000000-0000-0000-0000-000000000000';
+      const listingIds = cart.map((item) => item.id);
 
-      // Call the buy endpoint for each item in the cart
-      for (const item of cart) {
-        await apiClient.put(`/marketplace/listings/${item.id}/buy?buyer_id=${buyerId}`, {});
+      // 1. Create Order on Backend
+      const orderResponse = await apiClient.post('/marketplace/create-order', {
+        listing_ids: listingIds
+      }) as any;
+
+      if (orderResponse.status !== 'success') {
+        throw new Error('Failed to create order');
       }
 
-      setCart([]); // Clear cart
-      setCheckoutComplete(true);
+      // 2. Initialize Razorpay Checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderResponse.amount,
+        currency: orderResponse.currency,
+        name: "LoopX Circular Exchange",
+        description: "Payment for Materials",
+        // order_id: orderResponse.order_id, // Omitted for mock flow
+        handler: async function (response: any) {
+          try {
+            // 3. Verify Payment
+            const verifyResponse = await apiClient.post('/marketplace/verify-payment', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              listing_ids: listingIds,
+              buyer_id: buyerId
+            }) as any;
+
+            if (verifyResponse.status === 'success') {
+              setCart([]);
+              setCheckoutComplete(true);
+            } else {
+              alert("Payment verification failed on the server.");
+            }
+          } catch (verifyError) {
+            console.error("Verification error:", verifyError);
+            alert("Payment verification encountered an error.");
+          }
+        },
+        prefill: {
+          name: user?.name || "LoopX User",
+          email: user?.email || "user@example.com",
+        },
+        theme: {
+          color: "#10b981"
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        console.error(response.error);
+        alert(`Payment Failed: ${response.error.description}`);
+      });
+      rzp.open();
+
     } catch (error) {
       console.error("Checkout failed", error);
-      alert("Checkout failed. Some items might no longer be available.");
+      alert("Checkout failed. Please try again.");
     } finally {
       setIsCheckingOut(false);
     }
