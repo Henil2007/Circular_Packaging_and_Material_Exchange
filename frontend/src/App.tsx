@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Auth from './components/Auth';
 import DashboardChoice from './components/DashboardChoice';
 import SellPage from './components/Sellpage';
-import BuyPage from './components/Buypage';
+import BuyPage from './components/BuyPage';
 
 type View = 'dashboard' | 'buy' | 'sell';
 
