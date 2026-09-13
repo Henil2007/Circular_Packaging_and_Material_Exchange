@@ -1,5 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { apiClient } from '../api/client';
+
+/* ── 3D Tilt wrapper ── */
+function TiltCard({ children, className, style, onClick }: { children: React.ReactNode; className?: string; style?: React.CSSProperties; onClick?: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const move = (e: React.MouseEvent) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientY - r.top)  / r.height - 0.5) * 10;
+    const y = ((e.clientX - r.left) / r.width  - 0.5) * -10;
+    el.style.transform = `translateY(-4px) rotateX(${x}deg) rotateY(${y}deg)`;
+    el.style.boxShadow = `0 20px 50px rgba(0,0,0,0.12), ${-y * 2}px ${x * 2}px 20px rgba(5,150,105,0.1)`;
+  };
+  const reset = () => { if (!ref.current) return; ref.current.style.transform = ''; ref.current.style.boxShadow = ''; };
+  return (
+    <div ref={ref} className={className} style={{ ...style, transformStyle: 'preserve-3d', transition: 'transform 0.15s ease, box-shadow 0.15s ease', cursor: 'pointer' }}
+      onMouseMove={move} onMouseLeave={reset} onClick={onClick}>
+      {children}
+    </div>
+  );
+}
 
 const categoryBadgeClass: Record<string, string> = {
   Cardboard: 'badge-cardboard',
@@ -207,7 +227,7 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
 
       <div className="listing-grid">
         {filtered.map((item, idx) => (
-          <div key={item.id} className="listing-card" style={{ animationDelay: `${idx * 0.05}s` }}>
+          <TiltCard key={item.id} className="listing-card" style={{ animationDelay: `${idx * 0.05}s` }}>
             <div className="listing-card-body">
               <div className="badge-row">
                 <span className={`status-badge ${categoryBadgeClass[item.category] || 'badge-other'}`}>
@@ -277,7 +297,7 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
                 </button>
               </div>
             </div>
-          </div>
+          </TiltCard>
         ))}
 
         {filtered.length === 0 && (

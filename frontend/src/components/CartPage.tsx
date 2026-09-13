@@ -25,6 +25,92 @@ interface CartPageProps {
 export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
+  const [purchasedItems, setPurchasedItems] = useState<any[]>([]);
+
+  const handleInvoice = async (mode: 'print' | 'pdf') => {
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : { name: 'LoopX User', email: 'user@example.com' };
+    
+    let total = 0;
+    const itemsHtml = purchasedItems.map(item => {
+      // Extract numeric value from price string like "₹1200" or "$50"
+      const priceNum = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      total += priceNum;
+      return `
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.name} (${item.category})</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">${item.weight} kg</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">${item.price}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const invoiceHtml = `
+      <div id="invoice-content" style="font-family: 'Inter', sans-serif; padding: 40px; color: #333; max-width: 800px; margin: 0 auto; background: white;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #059669; padding-bottom: 20px; margin-bottom: 30px;">
+          <div>
+            <h1 style="color: #059669; margin: 0 0 8px 0;">LoopX Circular Exchange</h1>
+            <p style="margin: 0;">Official Invoice / Receipt</p>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0 0 4px 0;"><strong>Billed To:</strong><br/>${user.name}<br/>${user.email}</p>
+            <p style="margin: 0;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+          </div>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+          <thead>
+            <tr>
+              <th style="text-align: left; background: #f8fafc; padding: 12px; font-weight: 600; border-bottom: 2px solid #ddd;">Material</th>
+              <th style="text-align: right; background: #f8fafc; padding: 12px; font-weight: 600; border-bottom: 2px solid #ddd;">Weight</th>
+              <th style="text-align: right; background: #f8fafc; padding: 12px; font-weight: 600; border-bottom: 2px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+        <div style="text-align: right; font-size: 20px; font-weight: bold; color: #059669;">
+          Total Amount: ₹${total.toLocaleString()}
+        </div>
+        <div style="margin-top: 50px; font-size: 12px; color: #777; text-align: center;">
+          Thank you for participating in the circular economy!<br>
+          LoopX • Green Supply Chain Solutions
+        </div>
+      </div>
+    `;
+
+    if (mode === 'print') {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`<html><head><title>Print Invoice</title></head><body onload="window.print()">${invoiceHtml}</body></html>`);
+        printWindow.document.close();
+      }
+    } else if (mode === 'pdf') {
+      const getHtml2Pdf = async () => {
+        if ((window as any).html2pdf) return (window as any).html2pdf;
+        return new Promise((resolve) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          script.onload = () => resolve((window as any).html2pdf);
+          document.head.appendChild(script);
+        });
+      };
+      
+      const html2pdf = await getHtml2Pdf();
+      const container = document.createElement('div');
+      container.innerHTML = invoiceHtml;
+      
+      const opt = {
+        margin:       10,
+        filename:     `LoopX_Invoice_${new Date().getTime()}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      (html2pdf as any)().set(opt).from(container).save();
+    }
+  };
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
@@ -74,6 +160,7 @@ export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
             }) as any;
 
             if (verifyResponse.status === 'success') {
+              setPurchasedItems([...cart]);
               setCart([]);
               setCheckoutComplete(true);
             } else {
@@ -119,9 +206,27 @@ export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
         </div>
         <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>Checkout Successful!</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Your request has been sent to the suppliers. Logistics routing will begin shortly.</p>
-        <button className="btn-primary" onClick={() => onNavigate('dashboard')}>
-          Return to Dashboard
-        </button>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <button className="btn-secondary" onClick={() => handleInvoice('print')} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Print Invoice
+          </button>
+          <button className="btn-secondary" onClick={() => handleInvoice('pdf')} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--brand-primary)', color: 'white', borderColor: 'var(--brand-primary)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download PDF
+          </button>
+          <button className="btn-primary" onClick={() => onNavigate('dashboard')}>
+            Return to Dashboard
+          </button>
+        </div>
       </div>
     );
   }

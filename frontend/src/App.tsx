@@ -4,11 +4,11 @@ import Auth from './components/Auth';
 import BuyPage from './components/BuyPage';
 import CartPage from './components/CartPage';
 import DashboardChoice from './components/DashboardChoice';
-import EsgReport from './components/EsgReport'; // <-- Added import
+import EsgReport from './components/EsgReport';
+import FloatingParticles from './components/FloatingParticles';
 import SellPage from './components/Sellpage';
 
-// <-- Added 'esg' to the View type
-type View = 'dashboard' | 'buy' | 'sell' | 'cart' | 'esg'; 
+type View = 'dashboard' | 'buy' | 'sell' | 'cart' | 'esg';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -21,11 +21,9 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      // <-- Added 'esg' to the allowed routes array
-      if (['dashboard', 'buy', 'sell', 'cart', 'esg'].includes(hash)) { 
+      if (['dashboard', 'buy', 'sell', 'cart', 'esg'].includes(hash)) {
         setCurrentView(hash);
       } else if (isAuthenticated) {
-        // If hash is empty or invalid, replace it cleanly without adding to history stack
         window.history.replaceState(null, '', '#dashboard');
         setCurrentView('dashboard');
       }
@@ -49,12 +47,12 @@ export default function App() {
       try {
         await apiClient.get('/health');
         setIsBackendLive(true);
-      } catch (error) {
+      } catch {
         setIsBackendLive(false);
       }
     };
     checkBackend();
-    const interval = setInterval(checkBackend, 15000); // Check every 15s
+    const interval = setInterval(checkBackend, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -66,7 +64,7 @@ export default function App() {
   const logout = () => {
     localStorage.removeItem('auth');
     setIsAuthenticated(false);
-    window.history.replaceState(null, '', ' '); // clear hash
+    window.history.replaceState(null, '', ' ');
   };
 
   const navigateTo = (view: View) => {
@@ -79,6 +77,9 @@ export default function App() {
 
   return (
     <>
+      {/* Ambient floating eco particles */}
+      <FloatingParticles />
+
       <nav className="navbar">
         <button className="navbar-brand" onClick={() => navigateTo('dashboard')}>
           <div className="navbar-logo-icon">
@@ -106,7 +107,7 @@ export default function App() {
             style={{
               fontWeight: 600,
               color: currentView === 'esg' ? 'var(--brand-secondary)' : undefined,
-              borderColor: currentView === 'esg' ? 'rgba(0,200,83,0.35)' : undefined,
+              borderColor: currentView === 'esg' ? 'rgba(5,150,105,0.35)' : undefined,
             }}
           >
             ESG Report
@@ -127,7 +128,7 @@ export default function App() {
               borderRadius: '12px',
               padding: 0,
               color: currentView === 'cart' ? 'var(--brand-secondary)' : undefined,
-              borderColor: currentView === 'cart' ? 'rgba(0,200,83,0.35)' : undefined,
+              borderColor: currentView === 'cart' ? 'rgba(5,150,105,0.35)' : undefined,
             }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -137,20 +138,12 @@ export default function App() {
             </svg>
             {cart.length > 0 && (
               <span style={{
-                position: 'absolute',
-                top: '4px',
-                right: '4px',
-                background: 'var(--brand-primary)',
-                color: '#000',
-                fontSize: '10px',
-                fontWeight: 800,
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 8px rgba(0,200,83,0.5)',
+                position: 'absolute', top: '4px', right: '4px',
+                background: 'var(--brand-primary)', color: '#fff',
+                fontSize: '10px', fontWeight: 800,
+                width: '18px', height: '18px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 0 8px rgba(5,150,105,0.5)',
                 animation: 'logo-pulse 2s ease-in-out infinite',
               }}>
                 {cart.length}
@@ -169,7 +162,7 @@ export default function App() {
         </div>
       </nav>
 
-      <main>
+      <main style={{ position: 'relative', zIndex: 1 }}>
         {currentView === 'dashboard' && <DashboardChoice onSelect={(choice) => navigateTo(choice)} />}
         {currentView === 'sell' && (
           <div style={{ position: 'relative' }}>
@@ -201,8 +194,6 @@ export default function App() {
             <CartPage cart={cart} setCart={setCart} onNavigate={navigateTo} />
           </div>
         )}
-        
-        {/* <-- Added ESG Report Render Block --> */}
         {currentView === 'esg' && (
           <div style={{ position: 'relative' }}>
             <div className="page-container" style={{ paddingBottom: 0, paddingTop: '24px' }}>
