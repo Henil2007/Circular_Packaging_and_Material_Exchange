@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { apiClient } from './api/client';
 import Auth from './components/Auth';
-import DashboardChoice from './components/DashboardChoice';
-import SellPage from './components/Sellpage';
 import BuyPage from './components/BuyPage';
 import CartPage from './components/CartPage';
-import { apiClient } from './api/client';
+import DashboardChoice from './components/DashboardChoice';
+import EsgReport from './components/EsgReport'; // <-- Added import
+import SellPage from './components/Sellpage';
 
-type View = 'dashboard' | 'buy' | 'sell' | 'cart';
+// <-- Added 'esg' to the View type
+type View = 'dashboard' | 'buy' | 'sell' | 'cart' | 'esg'; 
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -19,7 +21,8 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      if (['dashboard', 'buy', 'sell', 'cart'].includes(hash)) {
+      // <-- Added 'esg' to the allowed routes array
+      if (['dashboard', 'buy', 'sell', 'cart', 'esg'].includes(hash)) { 
         setCurrentView(hash);
       } else if (isAuthenticated) {
         // If hash is empty or invalid, replace it cleanly without adding to history stack
@@ -92,6 +95,15 @@ export default function App() {
         </button>
 
         <div className="navbar-actions">
+          {/* <-- Added ESG Report Navigation Button --> */}
+          <button 
+            onClick={() => navigateTo('esg')}
+            className="btn-ghost"
+            style={{ fontWeight: 600 }}
+          >
+            ESG Report
+          </button>
+
           <button 
             onClick={() => navigateTo('cart')}
             className="btn-ghost"
@@ -110,7 +122,6 @@ export default function App() {
             )}
           </button>
           
-
           <button
             onClick={logout}
             className="btn-ghost"
@@ -150,6 +161,18 @@ export default function App() {
               </button>
             </div>
             <CartPage cart={cart} setCart={setCart} onNavigate={navigateTo} />
+          </div>
+        )}
+        
+        {/* <-- Added ESG Report Render Block --> */}
+        {currentView === 'esg' && (
+          <div style={{ position: 'relative' }}>
+            <div className="page-container" style={{ paddingBottom: 0, paddingTop: '24px' }}>
+              <button onClick={() => navigateTo('dashboard')} className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+                ← Back to Dashboard
+              </button>
+            </div>
+            <EsgReport />
           </div>
         )}
       </main>
