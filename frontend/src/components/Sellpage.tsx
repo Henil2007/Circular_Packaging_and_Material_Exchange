@@ -1,5 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { apiClient } from '../api/client';
+
+/* ── Confetti burst ── */
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999';
+  document.body.appendChild(canvas);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d')!;
+  const colors = ['#047857','#10b981','#34d399','#2563eb','#f59e0b','#ec4899','#8b5cf6'];
+  const particles = Array.from({ length: 130 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height * 0.4,
+    r: Math.random() * 7 + 3,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    vx: (Math.random() - 0.5) * 6,
+    vy: Math.random() * 4 + 2,
+    rot: Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 8,
+    alpha: 1,
+  }));
+  let frame = 0;
+  const tick = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.rot += p.rotV; p.alpha -= 0.008;
+      ctx.save(); ctx.globalAlpha = Math.max(p.alpha, 0);
+      ctx.translate(p.x, p.y); ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 1.6);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(tick);
+    else canvas.remove();
+  };
+  requestAnimationFrame(tick);
+}
 
 export default function SellPage() {
   const [formData, setFormData] = useState({
@@ -18,6 +56,8 @@ export default function SellPage() {
   const [tempImageId, setTempImageId] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [myListings, setMyListings] = useState<any[]>([]);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [scanPhase, setScanPhase] = useState<'idle'|'scanning'|'detected'>('idle');
 
   // --- Helper to safely get the current User ID ---
   const getCurrentUserId = () => {
@@ -55,12 +95,20 @@ export default function SellPage() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+
+      // Show preview + trigger scanner animation
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreviewUrl(previewUrl);
+      setScanPhase('scanning');
+
       const data = new FormData();
       data.append('file', file);
-      
+
       setIsAnalyzing(true);
       try {
         const res = await apiClient.post<{ message: string; generated_listing: any; temp_image_id: string }>('/marketplace/analyze-image', data);
+        setScanPhase('detected');
+        setTimeout(() => setScanPhase('idle'), 3000);
         if (res) {
           if (res.temp_image_id) {
             setTempImageId(res.temp_image_id);
@@ -81,6 +129,7 @@ export default function SellPage() {
         }
       } catch (err) {
         console.error('Failed to analyze image:', err);
+        setScanPhase('idle');
         alert('Failed to auto-analyze image. You can still fill the form manually.');
       } finally {
         setIsAnalyzing(false);
@@ -137,6 +186,7 @@ export default function SellPage() {
       
       setNotifiedCount(res.notified_count || 0);
       setShowToast(true);
+      launchConfetti();          // 🎉 confetti burst
       setTimeout(() => setShowToast(false), 5000);
       
       setFormData({ itemName: '', category: 'cardboard', weight: '', quantity: '', location: '', description: '', price: '' });
