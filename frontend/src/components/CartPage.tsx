@@ -29,13 +29,23 @@ export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
   const handleCheckout = async () => {
     setIsCheckingOut(true);
     try {
+      // 1. Dynamically pull the user data from local storage
+      const storedUserId = localStorage.getItem('userId');
       const userStr = localStorage.getItem('user');
       const user = userStr ? JSON.parse(userStr) : null;
-      // Database expects a valid UUID for buyer_id
-      const buyerId = user?.id || '00000000-0000-0000-0000-000000000000';
+      
+      const buyerId = storedUserId || user?.id;
+
+      // 2. Safety Check: If we can't find their dynamic ID, stop the checkout!
+      if (!buyerId) {
+        alert("Authentication Error: We couldn't verify your account ID. Please sign out and sign back in.");
+        setIsCheckingOut(false);
+        return; 
+      }
+      
       const listingIds = cart.map((item) => item.id);
 
-      // 1. Create Order on Backend
+      // 3. Create Order on Backend
       const orderResponse = await apiClient.post('/marketplace/create-order', {
         listing_ids: listingIds
       }) as any;
@@ -44,7 +54,7 @@ export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
         throw new Error('Failed to create order');
       }
 
-      // 2. Initialize Razorpay Checkout
+      // 4. Initialize Razorpay Checkout
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderResponse.amount,
@@ -54,13 +64,13 @@ export default function CartPage({ cart, setCart, onNavigate }: CartPageProps) {
         // order_id: orderResponse.order_id, // Omitted for mock flow
         handler: async function (response: any) {
           try {
-            // 3. Verify Payment
+            // 5. Verify Payment with the completely dynamic buyerId
             const verifyResponse = await apiClient.post('/marketplace/verify-payment', {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature,
               listing_ids: listingIds,
-              buyer_id: buyerId
+              buyer_id: buyerId 
             }) as any;
 
             if (verifyResponse.status === 'success') {

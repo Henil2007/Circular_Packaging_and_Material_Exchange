@@ -7,73 +7,73 @@ interface AuthProps {
 
 // Country data: name, dialing code, ISO code, required local-number digit count
 const COUNTRIES = [
-  { name: 'Afghanistan',           code: 'AF', dial: '+93',   digits: 9  },
-  { name: 'Albania',               code: 'AL', dial: '+355',  digits: 9  },
-  { name: 'Algeria',               code: 'DZ', dial: '+213',  digits: 9  },
-  { name: 'Argentina',             code: 'AR', dial: '+54',   digits: 10 },
-  { name: 'Australia',             code: 'AU', dial: '+61',   digits: 9  },
-  { name: 'Austria',               code: 'AT', dial: '+43',   digits: 10 },
-  { name: 'Bangladesh',            code: 'BD', dial: '+880',  digits: 10 },
-  { name: 'Belgium',               code: 'BE', dial: '+32',   digits: 9  },
-  { name: 'Brazil',                code: 'BR', dial: '+55',   digits: 11 },
-  { name: 'Canada',                code: 'CA', dial: '+1',    digits: 10 },
-  { name: 'Chile',                 code: 'CL', dial: '+56',   digits: 9  },
-  { name: 'China',                 code: 'CN', dial: '+86',   digits: 11 },
-  { name: 'Colombia',              code: 'CO', dial: '+57',   digits: 10 },
-  { name: 'Croatia',               code: 'HR', dial: '+385',  digits: 9  },
-  { name: 'Czech Republic',        code: 'CZ', dial: '+420',  digits: 9  },
-  { name: 'Denmark',               code: 'DK', dial: '+45',   digits: 8  },
-  { name: 'Egypt',                 code: 'EG', dial: '+20',   digits: 10 },
-  { name: 'Ethiopia',              code: 'ET', dial: '+251',  digits: 9  },
-  { name: 'Finland',               code: 'FI', dial: '+358',  digits: 10 },
-  { name: 'France',                code: 'FR', dial: '+33',   digits: 9  },
-  { name: 'Germany',               code: 'DE', dial: '+49',   digits: 10 },
-  { name: 'Ghana',                 code: 'GH', dial: '+233',  digits: 9  },
-  { name: 'Greece',                code: 'GR', dial: '+30',   digits: 10 },
-  { name: 'Hong Kong',             code: 'HK', dial: '+852',  digits: 8  },
-  { name: 'Hungary',               code: 'HU', dial: '+36',   digits: 9  },
-  { name: 'India',                 code: 'IN', dial: '+91',   digits: 10 },
-  { name: 'Indonesia',             code: 'ID', dial: '+62',   digits: 10 },
-  { name: 'Iran',                  code: 'IR', dial: '+98',   digits: 10 },
-  { name: 'Iraq',                  code: 'IQ', dial: '+964',  digits: 10 },
-  { name: 'Ireland',               code: 'IE', dial: '+353',  digits: 9  },
-  { name: 'Israel',                code: 'IL', dial: '+972',  digits: 9  },
-  { name: 'Italy',                 code: 'IT', dial: '+39',   digits: 10 },
-  { name: 'Japan',                 code: 'JP', dial: '+81',   digits: 10 },
-  { name: 'Jordan',                code: 'JO', dial: '+962',  digits: 9  },
-  { name: 'Kenya',                 code: 'KE', dial: '+254',  digits: 9  },
-  { name: 'Malaysia',              code: 'MY', dial: '+60',   digits: 9  },
-  { name: 'Mexico',                code: 'MX', dial: '+52',   digits: 10 },
-  { name: 'Morocco',               code: 'MA', dial: '+212',  digits: 9  },
-  { name: 'Myanmar',               code: 'MM', dial: '+95',   digits: 9  },
-  { name: 'Netherlands',           code: 'NL', dial: '+31',   digits: 9  },
-  { name: 'New Zealand',           code: 'NZ', dial: '+64',   digits: 9  },
-  { name: 'Nigeria',               code: 'NG', dial: '+234',  digits: 10 },
-  { name: 'Norway',                code: 'NO', dial: '+47',   digits: 8  },
-  { name: 'Pakistan',              code: 'PK', dial: '+92',   digits: 10 },
-  { name: 'Philippines',           code: 'PH', dial: '+63',   digits: 10 },
-  { name: 'Poland',                code: 'PL', dial: '+48',   digits: 9  },
-  { name: 'Portugal',              code: 'PT', dial: '+351',  digits: 9  },
-  { name: 'Romania',               code: 'RO', dial: '+40',   digits: 9  },
-  { name: 'Russia',                code: 'RU', dial: '+7',    digits: 10 },
-  { name: 'Saudi Arabia',          code: 'SA', dial: '+966',  digits: 9  },
-  { name: 'Singapore',             code: 'SG', dial: '+65',   digits: 8  },
-  { name: 'South Africa',          code: 'ZA', dial: '+27',   digits: 9  },
-  { name: 'South Korea',           code: 'KR', dial: '+82',   digits: 10 },
-  { name: 'Spain',                 code: 'ES', dial: '+34',   digits: 9  },
-  { name: 'Sri Lanka',             code: 'LK', dial: '+94',   digits: 9  },
-  { name: 'Sweden',                code: 'SE', dial: '+46',   digits: 9  },
-  { name: 'Switzerland',           code: 'CH', dial: '+41',   digits: 9  },
-  { name: 'Taiwan',                code: 'TW', dial: '+886',  digits: 9  },
-  { name: 'Tanzania',              code: 'TZ', dial: '+255',  digits: 9  },
-  { name: 'Thailand',              code: 'TH', dial: '+66',   digits: 9  },
-  { name: 'Turkey',                code: 'TR', dial: '+90',   digits: 10 },
-  { name: 'Uganda',                code: 'UG', dial: '+256',  digits: 9  },
-  { name: 'Ukraine',               code: 'UA', dial: '+380',  digits: 9  },
-  { name: 'United Arab Emirates',  code: 'AE', dial: '+971',  digits: 9  },
-  { name: 'United Kingdom',        code: 'GB', dial: '+44',   digits: 10 },
-  { name: 'United States',         code: 'US', dial: '+1',    digits: 10 },
-  { name: 'Vietnam',               code: 'VN', dial: '+84',   digits: 9  },
+  { name: 'Afghanistan',           code: 'AF', dial: '+93',  digits: 9  },
+  { name: 'Albania',               code: 'AL', dial: '+355', digits: 9  },
+  { name: 'Algeria',               code: 'DZ', dial: '+213', digits: 9  },
+  { name: 'Argentina',             code: 'AR', dial: '+54',  digits: 10 },
+  { name: 'Australia',             code: 'AU', dial: '+61',  digits: 9  },
+  { name: 'Austria',               code: 'AT', dial: '+43',  digits: 10 },
+  { name: 'Bangladesh',            code: 'BD', dial: '+880', digits: 10 },
+  { name: 'Belgium',               code: 'BE', dial: '+32',  digits: 9  },
+  { name: 'Brazil',                code: 'BR', dial: '+55',  digits: 11 },
+  { name: 'Canada',                code: 'CA', dial: '+1',   digits: 10 },
+  { name: 'Chile',                 code: 'CL', dial: '+56',  digits: 9  },
+  { name: 'China',                 code: 'CN', dial: '+86',  digits: 11 },
+  { name: 'Colombia',              code: 'CO', dial: '+57',  digits: 10 },
+  { name: 'Croatia',               code: 'HR', dial: '+385', digits: 9  },
+  { name: 'Czech Republic',        code: 'CZ', dial: '+420', digits: 9  },
+  { name: 'Denmark',               code: 'DK', dial: '+45',  digits: 8  },
+  { name: 'Egypt',                 code: 'EG', dial: '+20',  digits: 10 },
+  { name: 'Ethiopia',              code: 'ET', dial: '+251', digits: 9  },
+  { name: 'Finland',               code: 'FI', dial: '+358', digits: 10 },
+  { name: 'France',                code: 'FR', dial: '+33',  digits: 9  },
+  { name: 'Germany',               code: 'DE', dial: '+49',  digits: 10 },
+  { name: 'Ghana',                 code: 'GH', dial: '+233', digits: 9  },
+  { name: 'Greece',                code: 'GR', dial: '+30',  digits: 10 },
+  { name: 'Hong Kong',             code: 'HK', dial: '+852', digits: 8  },
+  { name: 'Hungary',               code: 'HU', dial: '+36',  digits: 9  },
+  { name: 'India',                 code: 'IN', dial: '+91',  digits: 10 },
+  { name: 'Indonesia',             code: 'ID', dial: '+62',  digits: 10 },
+  { name: 'Iran',                  code: 'IR', dial: '+98',  digits: 10 },
+  { name: 'Iraq',                  code: 'IQ', dial: '+964', digits: 10 },
+  { name: 'Ireland',               code: 'IE', dial: '+353', digits: 9  },
+  { name: 'Israel',                code: 'IL', dial: '+972', digits: 9  },
+  { name: 'Italy',                 code: 'IT', dial: '+39',  digits: 10 },
+  { name: 'Japan',                 code: 'JP', dial: '+81',  digits: 10 },
+  { name: 'Jordan',                code: 'JO', dial: '+962', digits: 9  },
+  { name: 'Kenya',                 code: 'KE', dial: '+254', digits: 9  },
+  { name: 'Malaysia',              code: 'MY', dial: '+60',  digits: 9  },
+  { name: 'Mexico',                code: 'MX', dial: '+52',  digits: 10 },
+  { name: 'Morocco',               code: 'MA', dial: '+212', digits: 9  },
+  { name: 'Myanmar',               code: 'MM', dial: '+95',  digits: 9  },
+  { name: 'Netherlands',           code: 'NL', dial: '+31',  digits: 9  },
+  { name: 'New Zealand',           code: 'NZ', dial: '+64',  digits: 9  },
+  { name: 'Nigeria',               code: 'NG', dial: '+234', digits: 10 },
+  { name: 'Norway',                code: 'NO', dial: '+47',  digits: 8  },
+  { name: 'Pakistan',              code: 'PK', dial: '+92',  digits: 10 },
+  { name: 'Philippines',           code: 'PH', dial: '+63',  digits: 10 },
+  { name: 'Poland',                code: 'PL', dial: '+48',  digits: 9  },
+  { name: 'Portugal',              code: 'PT', dial: '+351', digits: 9  },
+  { name: 'Romania',               code: 'RO', dial: '+40',  digits: 9  },
+  { name: 'Russia',                code: 'RU', dial: '+7',   digits: 10 },
+  { name: 'Saudi Arabia',          code: 'SA', dial: '+966', digits: 9  },
+  { name: 'Singapore',             code: 'SG', dial: '+65',  digits: 8  },
+  { name: 'South Africa',          code: 'ZA', dial: '+27',  digits: 9  },
+  { name: 'South Korea',           code: 'KR', dial: '+82',  digits: 10 },
+  { name: 'Spain',                 code: 'ES', dial: '+34',  digits: 9  },
+  { name: 'Sri Lanka',             code: 'LK', dial: '+94',  digits: 9  },
+  { name: 'Sweden',                code: 'SE', dial: '+46',  digits: 9  },
+  { name: 'Switzerland',           code: 'CH', dial: '+41',  digits: 9  },
+  { name: 'Taiwan',                code: 'TW', dial: '+886', digits: 9  },
+  { name: 'Tanzania',              code: 'TZ', dial: '+255', digits: 9  },
+  { name: 'Thailand',              code: 'TH', dial: '+66',  digits: 9  },
+  { name: 'Turkey',                code: 'TR', dial: '+90',  digits: 10 },
+  { name: 'Uganda',                code: 'UG', dial: '+256', digits: 9  },
+  { name: 'Ukraine',               code: 'UA', dial: '+380', digits: 9  },
+  { name: 'United Arab Emirates',  code: 'AE', dial: '+971', digits: 9  },
+  { name: 'United Kingdom',        code: 'GB', dial: '+44',  digits: 10 },
+  { name: 'United States',         code: 'US', dial: '+1',   digits: 10 },
+  { name: 'Vietnam',               code: 'VN', dial: '+84',  digits: 9  },
 ];
 
 type Country = typeof COUNTRIES[0];
@@ -185,21 +185,36 @@ export default function Auth({ onSuccess }: AuthProps) {
     setIsLoading(true);
     try {
       if (isLogin) {
+        // --- THE FIX: Handle Login and save dynamic ID ---
         const res = await apiClient.post<{ status: string, user_data: any }>('/auth/login', {
           email,
           password
         });
+        
+        // Save full object and exact ID
         localStorage.setItem('user', JSON.stringify(res.user_data));
+        if (res.user_data?.id) {
+          localStorage.setItem('userId', res.user_data.id);
+        }
+        
         onSuccess();
       } else {
-        await apiClient.post('/auth/register', {
+        // --- THE FIX: Handle Registration and save dynamic ID ---
+        const registerRes = await apiClient.post<{ status: string, user_data: any }>('/auth/register', {
           company_name: companyName,
           email,
           phone: `${selectedCountry.dial}${phoneNumber}`,
           password,
           role: 'supplier'
         });
-        localStorage.setItem('user', JSON.stringify({ email, role: 'supplier' }));
+        
+        // Use the returned data from registration, falling back if your API returns something slightly different
+        const savedUser = registerRes.user_data || { email, role: 'supplier' };
+        localStorage.setItem('user', JSON.stringify(savedUser));
+        if (savedUser.id) {
+          localStorage.setItem('userId', savedUser.id);
+        }
+        
         onSuccess();
       }
     } catch (error: any) {

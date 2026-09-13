@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { apiClient } from '../api/client';
 
 export default function SellPage() {
@@ -19,11 +19,18 @@ export default function SellPage() {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [myListings, setMyListings] = useState<any[]>([]);
 
+  // --- Helper to safely get the current User ID ---
+  const getCurrentUserId = () => {
+    return localStorage.getItem('userId') || 'PASTE_A_REAL_DB_USER_ID_HERE';
+  };
+
   const fetchMyListings = async () => {
     try {
+      const currentUserId = getCurrentUserId();
       const res = await apiClient.get<{ status: string; listings: any[] }>('/marketplace/listings');
       if (res && res.listings) {
-        setMyListings(res.listings.filter(l => l.supplier_id === 'user_123'));
+        // Now filters strictly by the actual logged-in user
+        setMyListings(res.listings.filter(l => l.supplier_id === currentUserId));
       }
     } catch (error) {
       console.error('Failed to fetch listings', error);
@@ -108,6 +115,12 @@ export default function SellPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const currentUserId = getCurrentUserId();
+      
+      if (currentUserId === 'PASTE_A_REAL_DB_USER_ID_HERE') {
+        alert("Warning: You are using a fallback ID. Please sign out and sign back in to link this listing to your actual account.");
+      }
+
       const payload = {
         title: formData.itemName,
         material_category: formData.category,
@@ -116,8 +129,9 @@ export default function SellPage() {
         price: parseFloat(formData.price.replace(/[^0-9.]/g, '')) || 0,
         lat: coordinates.lat,
         lng: coordinates.lng,
-        supplier_id: "user_123" // Mock auth user for now
+        supplier_id: currentUserId // <-- FIXED: No longer hardcoded to 'user_123'
       };
+      
       const url = tempImageId ? `/marketplace/listings?temp_image_id=${tempImageId}` : '/marketplace/listings';
       const res = await apiClient.post<{ status: string; message: string; notified_count?: number }>(url, payload);
       
