@@ -321,25 +321,65 @@ export default function SellPage() {
       </div>
 
       <div className="sell-form-card" style={{ marginTop: '24px' }}>
-        <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px', color: 'var(--text-primary)' }}>My Inventory</h2>
+        <h2 style={{
+          fontFamily: 'Space Grotesk, sans-serif',
+          fontSize: '22px',
+          fontWeight: 700,
+          marginBottom: '20px',
+          color: 'var(--text-primary)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <span style={{ color: 'var(--brand-secondary)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+          </span>
+          My Active Listings
+          {myListings.length > 0 && (
+            <span style={{ fontSize: '12px', fontWeight: 700, background: 'var(--brand-dim)', color: 'var(--brand-secondary)', padding: '3px 10px', borderRadius: '20px', border: '1px solid rgba(0,200,83,0.2)' }}>
+              {myListings.length}
+            </span>
+          )}
+        </h2>
         {myListings.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)' }}>You have no active listings.</p>
+          <div style={{ padding: '32px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.07)' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>You have no active listings yet. Create your first one above.</p>
+          </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {myListings.map((listing) => (
-              <div key={listing.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', border: '1px solid var(--border-subtle)', borderRadius: '8px', background: 'var(--bg-elevated)' }}>
+              <div key={listing.id} style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '16px 20px',
+                border: '1px solid rgba(0,200,83,0.12)',
+                borderRadius: '12px',
+                background: 'rgba(0,200,83,0.04)',
+                transition: 'all 0.2s ease',
+              }}>
                 <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0', color: 'var(--text-primary)' }}>{listing.title || 'Untitled Listing'}</h3>
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                    <span style={{ textTransform: 'capitalize' }}>{listing.material_category}</span> • {listing.estimated_weight_kg}kg • ₹{listing.price}
+                  <h3 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 5px 0', color: 'var(--text-primary)', fontFamily: 'Space Grotesk, sans-serif' }}>{listing.title || 'Untitled Listing'}</h3>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', display: 'flex', gap: '12px' }}>
+                    <span style={{ textTransform: 'capitalize', color: 'var(--brand-secondary)' }}>{listing.material_category}</span>
+                    <span>•</span>
+                    <span>{listing.estimated_weight_kg} kg</span>
+                    <span>•</span>
+                    <span>₹{listing.price}/kg</span>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => handleDelete(listing.id)}
                   className="btn-ghost"
-                  style={{ color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '6px 12px' }}
+                  style={{ color: '#dc2626', borderColor: 'rgba(220,38,38,0.2)', padding: '7px 14px', fontSize: '13px', fontWeight: 600 }}
                 >
-                  Delete
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle' }}>
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  </svg>
+                  Remove
                 </button>
               </div>
             ))}
