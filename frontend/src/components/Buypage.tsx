@@ -206,70 +206,74 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
       </div>
 
       <div className="listing-grid">
-        {filtered.map((item) => (
-          <div key={item.id} className="listing-card">
-            <div className="badge-row">
-              <span className={`status-badge ${categoryBadgeClass[item.category] || 'badge-other'}`}>
-                {item.category}
-              </span>
-            </div>
-
-            <h3 className="listing-name">{item.name}</h3>
-
-            <div className="listing-details">
-              <div className="detail-item">
-                <div className="detail-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                </div>
-                {item.location}
+        {filtered.map((item, idx) => (
+          <div key={item.id} className="listing-card" style={{ animationDelay: `${idx * 0.05}s` }}>
+            <div className="listing-card-body">
+              <div className="badge-row">
+                <span className={`status-badge ${categoryBadgeClass[item.category] || 'badge-other'}`}>
+                  {item.category}
+                </span>
+                <span style={{ fontSize: '11px', color: 'var(--brand-secondary)', fontWeight: 700, background: 'var(--brand-dim)', padding: '3px 8px', borderRadius: '10px', border: '1px solid rgba(0,200,83,0.2)' }}>
+                  {item.co2} CO₂e
+                </span>
               </div>
-              <div className="detail-item">
-                <div className="detail-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                  </svg>
+
+              <h3 className="listing-name">{item.name}</h3>
+
+              <div className="listing-details">
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </div>
+                  {item.location}
                 </div>
-                {item.weight.toLocaleString()} kg available
-              </div>
-              <div className="detail-item">
-                <div className="detail-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                  </svg>
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                  {item.weight.toLocaleString()} kg available
                 </div>
-                {item.quantity} units
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                  {item.quantity} unit{item.quantity !== 1 ? 's' : ''}
+                </div>
               </div>
             </div>
 
             <div className="listing-action-row">
               <span className="listing-price">{item.price}</span>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button 
-                  className="btn-secondary" 
-                  style={{ padding: '8px 16px', fontSize: '13px' }}
+                <button
+                  className="btn-secondary"
+                  style={{ padding: '8px 14px', fontSize: '13px' }}
                   onClick={() => setSelectedListing(item)}
                 >
-                  View Details
+                  Details
                 </button>
-                <button 
-                  className="btn-primary" 
-                  style={{ padding: '8px 16px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                <button
+                  className="btn-primary"
+                  style={{ padding: '8px 14px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
                   onClick={() => {
                     if (onAddToCart) onAddToCart(item);
                     alert("Added to cart!");
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
-                  Add to Cart
+                  Add
                 </button>
               </div>
             </div>
@@ -280,18 +284,18 @@ export default function BuyPage({ onAddToCart }: BuyPageProps) {
           <div style={{
             gridColumn: '1 / -1',
             textAlign: 'center',
-            padding: '64px 20px',
-            background: 'var(--bg-surface)',
-            border: '1px dashed var(--border-subtle)',
-            borderRadius: '12px'
+            padding: '72px 20px',
+            background: 'var(--gradient-card)',
+            border: '1px dashed rgba(255,255,255,0.08)',
+            borderRadius: '20px'
           }}>
-            <div style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}>
+            <div style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>
+              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto', display: 'block', opacity: 0.4 }}>
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </div>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>No matching inventory found</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px', fontFamily: 'Space Grotesk, sans-serif' }}>No matching inventory found</h3>
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Try adjusting your search criteria or clearing active filters.</p>
           </div>
         )}

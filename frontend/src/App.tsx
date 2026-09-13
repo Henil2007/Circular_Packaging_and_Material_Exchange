@@ -82,49 +82,87 @@ export default function App() {
       <nav className="navbar">
         <button className="navbar-brand" onClick={() => navigateTo('dashboard')}>
           <div className="navbar-logo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 2v6h-6"></path>
               <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
               <path d="M3 22v-6h6"></path>
               <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
             </svg>
           </div>
-          <span className="navbar-title">
-            LoopX
-          </span>
+          <span className="navbar-title">LoopX</span>
         </button>
 
+        {/* Center: live status badge */}
+        <div className="nav-badge">
+          <span className="nav-badge-dot" />
+          {isBackendLive ? 'System Live' : 'Connecting...'}
+        </div>
+
         <div className="navbar-actions">
-          {/* <-- Added ESG Report Navigation Button --> */}
-          <button 
+          {/* ESG Report */}
+          <button
             onClick={() => navigateTo('esg')}
             className="btn-ghost"
-            style={{ fontWeight: 600 }}
+            style={{
+              fontWeight: 600,
+              color: currentView === 'esg' ? 'var(--brand-secondary)' : undefined,
+              borderColor: currentView === 'esg' ? 'rgba(0,200,83,0.35)' : undefined,
+            }}
           >
             ESG Report
           </button>
 
-          <button 
+          {/* Cart icon */}
+          <button
             onClick={() => navigateTo('cart')}
             className="btn-ghost"
-            style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '50%' }}
             title="Cart"
+            style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '46px',
+              height: '46px',
+              borderRadius: '12px',
+              padding: 0,
+              color: currentView === 'cart' ? 'var(--brand-secondary)' : undefined,
+              borderColor: currentView === 'cart' ? 'rgba(0,200,83,0.35)' : undefined,
+            }}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
             {cart.length > 0 && (
-              <span style={{ position: 'absolute', top: 0, right: 0, background: '#ef4444', color: 'white', fontSize: '12px', fontWeight: 700, width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: 'var(--brand-primary)',
+                color: '#000',
+                fontSize: '10px',
+                fontWeight: 800,
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 8px rgba(0,200,83,0.5)',
+                animation: 'logo-pulse 2s ease-in-out infinite',
+              }}>
                 {cart.length}
               </span>
             )}
           </button>
-          
+
+          {/* Sign out */}
           <button
             onClick={logout}
             className="btn-ghost"
+            style={{ color: '#dc2626', borderColor: 'rgba(220,38,38,0.2)' }}
           >
             Sign Out
           </button>
